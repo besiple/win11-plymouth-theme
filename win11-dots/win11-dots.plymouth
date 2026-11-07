@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=Windows 11 Dots
+Description=Authentic Windows 11 Boot Animation
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/win11-dots
+ScriptFile=/usr/share/plymouth/themes/win11-dots/win11-dots.script

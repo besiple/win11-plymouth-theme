@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=Windows 11 Ring
+Description=Authentic Windows 11 Boot Animation
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/win11-ring
+ScriptFile=/usr/share/plymouth/themes/win11-ring/win11-ring.script

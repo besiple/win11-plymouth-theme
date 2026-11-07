@@ -1,0 +1,109 @@
+# -------------------------------------------------------------
+# Windows 11 Plymouth Theme - Windows 11 Ring
+# -------------------------------------------------------------
+
+# Screen setup
+screen_w = Window.GetWidth();
+screen_h = Window.GetHeight();
+
+# Pure black background
+Window.SetBackgroundTopColor(0.0, 0.0, 0.0);
+Window.SetBackgroundBottomColor(0.0, 0.0, 0.0);
+
+# Logo
+logo_img = Image("logo.png");
+logo_sprite = Sprite();
+logo_sprite.SetImage(logo_img);
+logo_w = logo_img.GetWidth();
+logo_h = logo_img.GetHeight();
+logo_x = screen_w / 2 - logo_w / 2;
+logo_y = screen_h / 2 - logo_h / 2 - 50;
+logo_sprite.SetX(logo_x);
+logo_sprite.SetY(logo_y);
+logo_sprite.SetOpacity(1.0);
+
+# Spinner Animation
+frame_count = 119;
+for (i = 0; i < frame_count; i++) {
+    throbber[i] = Image("throbber-" + i + ".png");
+}
+
+spinner_sprite = Sprite();
+spinner_w = throbber[0].GetWidth();
+spinner_h = throbber[0].GetHeight();
+spinner_x = screen_w / 2 - spinner_w / 2;
+spinner_y = logo_y + logo_h + 40;
+spinner_sprite.SetX(spinner_x);
+spinner_sprite.SetY(spinner_y);
+
+progress = 0;
+
+fun refresh_callback () {
+    frame_idx = progress % frame_count;
+    spinner_sprite.SetImage(throbber[frame_idx]);
+    progress++;
+}
+
+Plymouth.SetRefreshFunction(refresh_callback);
+
+# Password prompt handling (LUKS disk encryption)
+status = "normal";
+prompt_sprite = Sprite();
+bullet_img = Image("bullet.png");
+entry_img = Image("entry.png");
+entry_sprite = Sprite();
+
+fun display_password_callback (prompt, bullets) {
+    status = "password";
+    logo_sprite.SetOpacity(0.4);
+    spinner_sprite.SetOpacity(0.0);
+
+    prompt_img = Image.Text(prompt, 1.0, 1.0, 1.0);
+    prompt_sprite.SetImage(prompt_img);
+    prompt_sprite.SetX(screen_w / 2 - prompt_img.GetWidth() / 2);
+    prompt_sprite.SetY(screen_h / 2 - 40);
+
+    entry_sprite.SetImage(entry_img);
+    entry_sprite.SetX(screen_w / 2 - entry_img.GetWidth() / 2);
+    entry_sprite.SetY(screen_h / 2);
+
+    # Render password bullets
+    bullet_total_w = bullets * 14;
+    bullet_start_x = screen_w / 2 - bullet_total_w / 2;
+    for (i = 0; i < bullets; i++) {
+        bullets_sprite[i] = Sprite();
+        bullets_sprite[i].SetImage(bullet_img);
+        bullets_sprite[i].SetX(bullet_start_x + i * 14);
+        bullets_sprite[i].SetY(screen_h / 2 + 10);
+    }
+}
+
+fun display_normal_callback () {
+    status = "normal";
+    logo_sprite.SetOpacity(1.0);
+    spinner_sprite.SetOpacity(1.0);
+    prompt_sprite.SetImage(Image(""));
+    entry_sprite.SetImage(Image(""));
+    for (i = 0; i < 50; i++) {
+        bullets_sprite[i] = null;
+    }
+}
+
+fun display_message_callback (text) {
+    msg_img = Image.Text(text, 0.8, 0.8, 0.8);
+    msg_sprite = Sprite();
+    msg_sprite.SetImage(msg_img);
+    msg_sprite.SetX(screen_w / 2 - msg_img.GetWidth() / 2);
+    msg_sprite.SetY(screen_h - 60);
+}
+
+Plymouth.SetDisplayPasswordFunction(display_password_callback);
+Plymouth.SetDisplayNormalFunction(display_normal_callback);
+Plymouth.SetMessageFunction(display_message_callback);
+
+# Quit callback
+fun quit_callback () {
+    logo_sprite.SetOpacity(0.0);
+    spinner_sprite.SetOpacity(0.0);
+}
+Plymouth.SetQuitFunction(quit_callback);
